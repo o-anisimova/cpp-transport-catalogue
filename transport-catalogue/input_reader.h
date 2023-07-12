@@ -2,6 +2,8 @@
 
 #include "transport_catalogue.h"
 
+#include <iostream>
+
 namespace transport {
 
 	namespace input_reader {
@@ -10,10 +12,10 @@ namespace transport {
 		public:
 			InputReader(Catalogue& transport_catalogue);
 
-			void ReadData();
+			void ReadData(istream& is);
 
 		private:
-			void InputData();
+			void InputData(istream& is);
 	
 			void ProcessData();
 

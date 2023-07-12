@@ -2,17 +2,19 @@
 
 #include "transport_catalogue.h"
 
+#include <iostream>
+
 namespace transport {
 
 	namespace stat_reader {
 
-		void OutputData(const Catalogue& transport_catalogue);
+		void OutputData(istream& is, ostream& os, const Catalogue& transport_catalogue);
 
-		std::vector<std::string> InputRequests();
+		std::vector<std::string> InputRequests(istream& is);
 
-		void ReadStop(const Catalogue& transport_catalogue, string_view request);
+		void ReadStop(ostream& os, const Catalogue& transport_catalogue, string_view request);
 
-		void ReadBus(const Catalogue& transport_catalogue, string_view request);
+		void ReadBus(ostream& os, const Catalogue& transport_catalogue, string_view request);
 
 		std::string SeparateWord(const std::string& str, size_t begin, size_t size);
 

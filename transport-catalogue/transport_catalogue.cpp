@@ -7,7 +7,7 @@ using namespace std;
 
 namespace transport {
 
-	void Catalogue::AddStop(Stop&& stop) {
+	void Catalogue::AddStop(const Stop& stop) {
 		stops_.push_back(move(stop));
 		stopname_to_stop_.insert({ stops_.back().stop_name, &stops_.back() });
 	}
@@ -19,7 +19,7 @@ namespace transport {
 		return stopname_to_stop_.at(stop_name);
 	}
 
-	void Catalogue::AddBus(Bus&& bus) {
+	void Catalogue::AddBus(const Bus& bus) {
 		buses_.push_back(move(bus));
 		Bus* added_bus = &buses_.back();
 		busname_to_bus_.insert({ added_bus->bus_name, added_bus });
@@ -71,7 +71,7 @@ namespace transport {
 		return stop_to_bus_names_.at(stop);
 	}
 
-	void Catalogue::AddStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance) {
+	void Catalogue::SetStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance) {
 		stops_distances_[std::pair<Stop*, Stop*>(lhs_stop, rhs_stop)] = distance;
 	}
 

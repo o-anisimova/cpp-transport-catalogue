@@ -1,6 +1,5 @@
 #include "stat_reader.h"
 
-#include <iostream>
 #include <iomanip>
 
 using namespace std;
@@ -9,8 +8,8 @@ namespace transport {
 
 	namespace stat_reader {
 		
-		void OutputData(const Catalogue& transport_catalogue) {
-			vector<string> request_queue = InputRequests();
+		void OutputData(istream& is, ostream& os, const Catalogue& transport_catalogue) {
+			vector<string> request_queue = InputRequests(is);
 
 			for (string_view request : request_queue) {
 				cout << request << ": "s;
@@ -18,11 +17,11 @@ namespace transport {
 				//Отделяем основную часть от слов "Stop", "Bus"
 				if (request.substr(0, 4) == "Stop"s) {
 					request = request.substr(5, request.size()); // 4 символа в Stop + пробел
-					ReadStop(transport_catalogue, request);
+					ReadStop(os, transport_catalogue, request);
 				}
 				else if (request.substr(0, 3) == "Bus"s) {
 					request = request.substr(4, request.size()); //3 символа Bus + пробел
-					ReadBus(transport_catalogue, request);
+					ReadBus(os, transport_catalogue, request);
 				}
 				else {
 					throw invalid_argument("Unknown request type"s);
@@ -30,53 +29,53 @@ namespace transport {
 			}
 		}
 
-		vector<string> InputRequests() {
+		vector<string> InputRequests(istream& is) {
 			size_t request_qty;
-			cin >> request_qty >> ws;
+			is >> request_qty >> ws;
 
 			vector<string> request_queue;
 			request_queue.reserve(request_qty);
 
 			for (size_t i = 0; i < request_qty; ++i) {
 				string request;
-				getline(cin, request);
+				getline(is, request);
 				request_queue.push_back(move(request));
 			}
 
 			return request_queue;
 		}
 
-		void ReadStop(const Catalogue& transport_catalogue, string_view request) {
+		void ReadStop(ostream& os, const Catalogue& transport_catalogue, string_view request) {
 			Stop* stop = transport_catalogue.FindStop(request);
 
 			if (stop == nullptr) {
-				cout << "not found" << endl;
+				os << "not found" << endl;
 				return;
 			}
 	
 			set<string_view> buses = transport_catalogue.GetStopToBusesList(stop);
 			if (buses.size() == 0) {
-				cout << "no buses"s << endl;
+				os << "no buses"s << endl;
 				return;
 			}
 	
-			cout << "buses"s;
+			os << "buses"s;
 			for (string_view bus_name : buses) {
-				cout << " "s << bus_name;
+				os << " "s << bus_name;
 			}
-			cout << endl;
+			os << endl;
 		}
 
-		void ReadBus(const Catalogue& transport_catalogue, string_view request) {
+		void ReadBus(ostream& os, const Catalogue& transport_catalogue, string_view request) {
 			Bus* bus = transport_catalogue.FindBus(request);
 
 			if (bus == nullptr) {
-				cout << "not found"s << endl;
+				os << "not found"s << endl;
 				return;
 			}
 	
 			detail::BusInfo bus_info = transport_catalogue.GetBusInfo(bus);
-			cout << bus_info.stops_qty << " stops on route, " << bus_info.unique_stops_qty << " unique stops, "s << bus_info.route_length << " route length, "s << setprecision(6) << bus_info.curvature << " curvature"s << endl;
+			os << bus_info.stops_qty << " stops on route, " << bus_info.unique_stops_qty << " unique stops, "s << bus_info.route_length << " route length, "s << setprecision(6) << bus_info.curvature << " curvature"s << endl;
 		}
 
 

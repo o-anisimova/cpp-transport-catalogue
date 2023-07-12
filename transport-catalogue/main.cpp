@@ -7,6 +7,6 @@ using namespace transport;
 int main() {
 	Catalogue transport_catalogue;
 	input_reader::InputReader input_reader(transport_catalogue);
-	input_reader.ReadData();
-	stat_reader::OutputData(transport_catalogue);
+	input_reader.ReadData(cin);
+	stat_reader::OutputData(cin, cout, transport_catalogue);
 }

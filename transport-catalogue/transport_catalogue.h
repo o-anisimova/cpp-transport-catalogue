@@ -44,11 +44,11 @@ namespace transport {
 
 	class Catalogue {
 	public:
-		void AddStop(Stop&& stop);
+		void AddStop(const Stop& stop);
 
 		Stop* FindStop(std::string_view stop_name) const;
 
-		void AddBus(Bus&& bus);
+		void AddBus(const Bus& bus);
 
 		Bus* FindBus(std::string_view bus_name) const;
 
@@ -56,7 +56,7 @@ namespace transport {
 
 		const std::set<string_view>& GetStopToBusesList(Stop* stop) const;
 
-		void AddStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance);
+		void SetStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance);
 
 		int GetDistanceBetweenStops(Stop* lhs_stop, Stop* rhs_stop) const;
 

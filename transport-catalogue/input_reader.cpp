@@ -1,7 +1,5 @@
 #include "input_reader.h"
 
-#include <iostream>
-
 using namespace std;
 
 namespace transport {
@@ -12,21 +10,21 @@ namespace transport {
 			:transport_catalogue_(transport_catalogue) {
 		}
 
-		void InputReader::ReadData() {
-			InputData();
+		void InputReader::ReadData(istream& is) {
+			InputData(is);
 			ProcessData();
 		}
 
-		void InputReader::InputData() {
+		void InputReader::InputData(istream& is) {
 			size_t request_cnt;
-			cin >> request_cnt >> ws;
+			is >> request_cnt >> ws;
 
 			stops_.reserve(request_cnt);
 			buses_.reserve(request_cnt);
 
 			for (size_t i = 0; i < request_cnt; ++i) {
 				string request;
-				getline(cin, request);
+				getline(is, request);
 				if (request.substr(0,4) == "Stop"s) {
 					stops_.push_back(request.substr(5, request.size())); // 4 символа в Stop + пробел
 				}
@@ -67,7 +65,7 @@ namespace transport {
 				stop.coordinates.lng = stod(SeparateTrimmedWord(request, begin, separator_pos - 1));
 
 				//Добавляем в транспортный каталог
-				transport_catalogue_.AddStop(move(stop));
+				transport_catalogue_.AddStop(stop);
 			}
 		}
 
@@ -103,7 +101,7 @@ namespace transport {
 					}
 				}
 
-				transport_catalogue_.AddBus(move(bus));
+				transport_catalogue_.AddBus(bus);
 			}
 		}
 
@@ -122,7 +120,7 @@ namespace transport {
 					separator_pos = request.find(',', begin);
 					Stop* stop2 = transport_catalogue_.FindStop(SeparateWord(request, begin, separator_pos));
 
-					transport_catalogue_.AddStopsDistance(stop1, stop2, distance);
+					transport_catalogue_.SetStopsDistance(stop1, stop2, distance);
 				}
 			}
 		}
