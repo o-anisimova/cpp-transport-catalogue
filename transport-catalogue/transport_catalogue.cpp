@@ -8,7 +8,7 @@ using namespace std;
 namespace transport {
 
 	void Catalogue::AddStop(const Stop& stop) {
-		stops_.push_back(move(stop));
+		stops_.push_back(stop);
 		stopname_to_stop_.insert({ stops_.back().stop_name, &stops_.back() });
 	}
 
@@ -20,7 +20,7 @@ namespace transport {
 	}
 
 	void Catalogue::AddBus(const Bus& bus) {
-		buses_.push_back(move(bus));
+		buses_.push_back(bus);
 		Bus* added_bus = &buses_.back();
 		busname_to_bus_.insert({ added_bus->bus_name, added_bus });
 
@@ -42,7 +42,7 @@ namespace transport {
 		}
 
 		detail::BusInfo bus_info;
-		bus_info.stops_qty = bus->route.size();
+		bus_info.stops_qty = static_cast<int>(bus->route.size());
 
 		unordered_set<string> unique_stops;
 		double geographic_route_length = 0.0;
@@ -53,7 +53,7 @@ namespace transport {
 		}
 		unique_stops.insert(bus->route[bus_info.stops_qty - 1]->stop_name);
 	
-		bus_info.unique_stops_qty = unique_stops.size();
+		bus_info.unique_stops_qty = static_cast<int>(unique_stops.size());
 		bus_info.curvature = bus_info.route_length / geographic_route_length;
 
 		return bus_info;
