@@ -1,45 +1,58 @@
 #pragma once
-#include "transport_catalogue.h"
+#include "request_handler.h"
 #include "json.h"
 
 namespace transport {
 
-	enum StatRequestType {
-		STOP,
-		BUS
-	};
+	namespace json_reader {
 
-	struct StatRequest {
-		int id_;
-		StatRequestType type_;
-		std::string name_;
-	};
+		enum StatRequestType {
+			STOP,
+			BUS,
+			MAP
+		};
 
-	class JsonReader {
-	public:
-		JsonReader(Catalogue& transport_catalogue)
-		:transport_catalogue_(transport_catalogue){
-		}
+		struct StatRequest {
+			int id_;
+			StatRequestType type_;
+			std::string name_;
+		};
 
-		void FillCatalogue(istream& in);
+		class JsonReader {
+		public:
+			JsonReader(TransportCatalogue& transport_catalogue, renderer::MapRenderer& map_renderer)
+			:request_handler_(transport_catalogue, map_renderer), transport_catalogue_(transport_catalogue), map_renderer_(map_renderer){
+			}
 
-		void OutputData(ostream& out);
+			void FillCatalogue(std::istream& in);
 
-	private:
-		void ProcessStop(const json::Dict& stop_request);
+			void OutputData(std::ostream& out);
 
-		void ProcessDistances(const json::Dict& stop_request);
+		private:
+			void FillStops(const json::Array& base_requests);
 
-		void ProcessBus(const json::Dict& bus_request);
+			void FillDistances(const json::Dict& stop_request);
 
-		void FillStatRequestQueue(const json::Dict& stat_request_dict);
+			void FillBus(const json::Dict& bus_request);
 
-		json::Node GetStopData(const StatRequest& stat_request);
+			void FillStatRequestQueue(const json::Dict& stat_request_dict);
 
-		json::Node GetBusData(const StatRequest& stat_request);
+			void FillRenderSettings(const json::Dict& bus_request);
+
+			svg::Color GetColor(const json::Node& color_node);
+
+			json::Node OutputStop(const StatRequest& stat_request);
+
+			json::Node OutputBus(const StatRequest& stat_request);
+
+			json::Node OutputMap(const StatRequest& stat_request);
 		
-		Catalogue& transport_catalogue_;
-		std::vector<StatRequest> stat_requests_;
-	};
+			RequestHandler request_handler_;
+			TransportCatalogue& transport_catalogue_;
+			renderer::MapRenderer& map_renderer_;
+			std::vector<StatRequest> stat_requests_;
+		};
 
-}
+	} // namespace json_reader
+
+} // namespace transport

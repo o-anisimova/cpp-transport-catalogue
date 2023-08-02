@@ -9,12 +9,12 @@
 namespace json {
 
     class Node;
-    // Сохраните объявления Dict и Array без изменения
+    // РЎРѕС…СЂР°РЅРёС‚Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ Dict Рё Array Р±РµР· РёР·РјРµРЅРµРЅРёСЏ
     using Dict = std::map<std::string, Node>;
     using Array = std::vector<Node>;
     using Value = std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string>;
 
-    // Эта ошибка должна выбрасываться при ошибках парсинга JSON
+    // Р­С‚Р° РѕС€РёР±РєР° РґРѕР»Р¶РЅР° РІС‹Р±СЂР°СЃС‹РІР°С‚СЊСЃСЏ РїСЂРё РѕС€РёР±РєР°С… РїР°СЂСЃРёРЅРіР° JSON
     class ParsingError : public std::runtime_error {
     public:
         using runtime_error::runtime_error;
@@ -22,7 +22,7 @@ namespace json {
 
     class Node {
     public:
-        /* Реализуйте Node, используя std::variant */
+        /* Р РµР°Р»РёР·СѓР№С‚Рµ Node, РёСЃРїРѕР»СЊР·СѓСЏ std::variant */
 
         Node() = default;
         Node(std::nullptr_t value);
@@ -73,7 +73,7 @@ namespace json {
 
     Document Load(std::istream& input);
 
-    // Контекст вывода, хранит ссылку на поток вывода и текущий отсуп
+    // РљРѕРЅС‚РµРєСЃС‚ РІС‹РІРѕРґР°, С…СЂР°РЅРёС‚ СЃСЃС‹Р»РєСѓ РЅР° РїРѕС‚РѕРє РІС‹РІРѕРґР° Рё С‚РµРєСѓС‰РёР№ РѕС‚СЃСѓРї
     struct PrintContext {
         std::ostream& out;
         int indent_step = 2;
@@ -90,7 +90,7 @@ namespace json {
             }
         }
 
-        // Возвращает новый контекст вывода с увеличенным смещением
+        // Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІС‹Р№ РєРѕРЅС‚РµРєСЃС‚ РІС‹РІРѕРґР° СЃ СѓРІРµР»РёС‡РµРЅРЅС‹Рј СЃРјРµС‰РµРЅРёРµРј
         PrintContext Indented() const {
             return { out, indent_step, indent_step + indent };
         }
