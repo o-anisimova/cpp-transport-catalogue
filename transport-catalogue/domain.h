@@ -25,6 +25,13 @@ namespace transport {
 		bool is_roundtrip;
 	};
 
+	struct BusStat {
+		int stops_qty = 0;
+		int unique_stops_qty = 0;
+		int route_length = 0;
+		double curvature = 0.0;
+	};
+
 	std::vector<const Stop*> GetBusFullRoute(const Bus* bus);
 
 }  // namespace transport

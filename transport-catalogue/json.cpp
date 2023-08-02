@@ -259,113 +259,85 @@ namespace json {
 
     }  // namespace
 
-    Node::Node(std::nullptr_t value)
-        : value_(move(value)) {
-    }
-
-    Node::Node(Array array)
-        : value_(move(array)) {
-    }
-
-    Node::Node(Dict map)
-        : value_(move(map)) {
-    }
-
-    Node::Node(bool value)
-        : value_(value) {
-    }
-
-    Node::Node(int value)
-        : value_(value) {
-    }
-
-    Node::Node(double value)
-        : value_(value) {
-    }
-
-    Node::Node(string value)
-        : value_(move(value)) {
-    }
-
     bool Node::IsInt() const {
-        return holds_alternative<int>(value_);
+        return holds_alternative<int>(*this);
     }
 
     bool Node::IsDouble() const {
-        return holds_alternative<double>(value_) || holds_alternative<int>(value_);
+        return holds_alternative<double>(*this) || holds_alternative<int>(*this);
     }
 
     bool Node::IsPureDouble() const {
-        return holds_alternative<double>(value_);
+        return holds_alternative<double>(*this);
     }
 
     bool Node::IsBool() const {
-        return holds_alternative<bool>(value_);
+        return holds_alternative<bool>(*this);
     }
 
     bool Node::IsString() const {
-        return holds_alternative<string>(value_);
+        return  holds_alternative<string>(*this);
     }
 
     bool Node::IsNull() const {
-        return holds_alternative<nullptr_t>(value_);
+        return holds_alternative<nullptr_t>(*this);
     }
 
     bool Node::IsArray() const {
-        return holds_alternative<Array>(value_);
+        return holds_alternative<Array>(*this);
     }
 
     bool Node::IsMap() const {
-        return holds_alternative<Dict>(value_);
+        return holds_alternative<Dict>(*this);
     }
 
     const Array& Node::AsArray() const {
-        if (holds_alternative<Array>(value_)) {
-            return get<Array>(value_);
+        if (holds_alternative<Array>(*this)) {
+            return get<Array>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     const Dict& Node::AsMap() const {
-        if (holds_alternative<Dict>(value_)) {
-            return get<Dict>(value_);
+        if (holds_alternative<Dict>(*this)) {
+            return get<Dict>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     bool Node::AsBool() const {
-        if (holds_alternative<bool>(value_)) {
-            return get<bool>(value_);
+        if (holds_alternative<bool>(*this)) {
+            return get<bool>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     int Node::AsInt() const {
-        if (holds_alternative<int>(value_)) {
-            return get<int>(value_);
+        if (holds_alternative<int>(*this)) {
+            return get<int>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     double Node::AsDouble() const {
-        if (holds_alternative<double>(value_)) {
-            return get<double>(value_);
+        if (holds_alternative<double>(*this)) {
+            return get<double>(*this);
         }
-        else if (holds_alternative<int>(value_)) {
-            return get<int>(value_);
+        else if (holds_alternative<int>(*this)) {
+            return get<int>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     const string& Node::AsString() const {
-        if (holds_alternative<string>(value_)) {
-            return get<string>(value_);
+        if (holds_alternative<string>(*this)) {
+            return get<string>(*this);
         }
         throw logic_error("Unvalid value type"s);
     }
 
     const Value& Node::GetValue() const {
-        return value_;
+        return *this;
     }
 
     bool operator==(const Node& lhs, const Node& rhs) {

@@ -20,18 +20,10 @@ namespace json {
         using runtime_error::runtime_error;
     };
 
-    class Node {
+    class Node : public Value{
     public:
-        /* Реализуйте Node, используя std::variant */
 
-        Node() = default;
-        Node(std::nullptr_t value);
-        Node(Array array);
-        Node(Dict map);
-        Node(bool value);
-        Node(int value);
-        Node(double value);
-        Node(std::string value);
+        using variant::variant;
 
         bool IsInt() const;
         bool IsDouble() const;
@@ -50,9 +42,6 @@ namespace json {
         const std::string& AsString() const;
 
         const Value& GetValue() const;
-
-    private:
-        Value value_;
     };
 
     bool operator==(const Node& lhs, const Node& rhs);

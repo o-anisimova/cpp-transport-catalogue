@@ -7,6 +7,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <optional>
 
 namespace transport {
 
@@ -29,6 +30,9 @@ namespace transport {
 		std::vector<const Bus*> GetBusListSorted() const;
 
 		std::vector<const Stop*> GetStopListSorted() const;
+
+		// Возвращает информацию о маршруте (запрос Bus)
+		std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
 
 	private:
 		std::deque<Stop> stops_;

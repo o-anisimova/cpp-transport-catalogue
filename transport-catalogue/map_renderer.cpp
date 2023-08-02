@@ -38,7 +38,7 @@ namespace transport {
         }
 
         void MapRenderer::RenderBusLines(svg::Document& document, const std::vector<const Bus*>& bus_list, const SphereProjector& proj) const {
-            const int COLOR_PALETTE_MAX_ELEM = render_settings_.color_palette.size() - 1;
+            const size_t COLOR_PALETTE_MAX_ELEM = render_settings_.color_palette.size() - 1;
             size_t j = 0;
             for (size_t i = 0; i < bus_list.size(); ++i) {
                 if (!bus_list[i]->route.empty()) {
@@ -64,7 +64,7 @@ namespace transport {
         }
 
         void MapRenderer::RenderBusLabels(svg::Document& document, const std::vector<const Bus*>& bus_list, const SphereProjector& proj) const {
-            const int COLOR_PALETTE_MAX_ELEM = render_settings_.color_palette.size() - 1;
+            const size_t COLOR_PALETTE_MAX_ELEM = render_settings_.color_palette.size() - 1;
             size_t j = 0;
             for (size_t i = 0; i < bus_list.size(); ++i) {
                 if (!bus_list[i]->route.empty()) {
@@ -81,9 +81,9 @@ namespace transport {
                     text.SetFillColor(render_settings_.color_palette[j]);
                     document.Add(text);
 
-                    if (!bus_list[i]->is_roundtrip && bus_list[i]->route[0] != bus_list[i]->route[bus_list[i]->route.size() - 1]) {
+                    if (!bus_list[i]->is_roundtrip && bus_list[i]->route.front() != bus_list[i]->route.back()) {
                         //Проецируем координаты для второй надписи
-                        svg::Point point = proj(bus_list[i]->route[bus_list[i]->route.size() - 1]->coordinates);
+                        svg::Point point = proj(bus_list[i]->route.back()->coordinates);
                         //Подложка с новыми координатами
                         underlayer_text.SetPosition(point);
                         document.Add(underlayer_text);
