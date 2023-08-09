@@ -9,20 +9,19 @@
 namespace json {
 
     class Node;
-    // РЎРѕС…СЂР°РЅРёС‚Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ Dict Рё Array Р±РµР· РёР·РјРµРЅРµРЅРёСЏ
     using Dict = std::map<std::string, Node>;
     using Array = std::vector<Node>;
-    using Value = std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string>;
+   
 
-    // Р­С‚Р° РѕС€РёР±РєР° РґРѕР»Р¶РЅР° РІС‹Р±СЂР°СЃС‹РІР°С‚СЊСЃСЏ РїСЂРё РѕС€РёР±РєР°С… РїР°СЂСЃРёРЅРіР° JSON
+    // Эта ошибка должна выбрасываться при ошибках парсинга JSON
     class ParsingError : public std::runtime_error {
     public:
         using runtime_error::runtime_error;
     };
 
-    class Node : public Value{
+    class Node : public std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string> {
     public:
-
+        using Value = std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string>;
         using variant::variant;
 
         bool IsInt() const;
@@ -32,16 +31,17 @@ namespace json {
         bool IsString() const;
         bool IsNull() const;
         bool IsArray() const;
-        bool IsMap() const;
+        bool IsDict() const;
 
         const Array& AsArray() const;
-        const Dict& AsMap() const;
+        const Dict& AsDict() const;
         bool AsBool() const;
         int AsInt() const;
         double AsDouble() const;
         const std::string& AsString() const;
 
         const Value& GetValue() const;
+        Value& GetValue();
     };
 
     bool operator==(const Node& lhs, const Node& rhs);
@@ -62,7 +62,7 @@ namespace json {
 
     Document Load(std::istream& input);
 
-    // РљРѕРЅС‚РµРєСЃС‚ РІС‹РІРѕРґР°, С…СЂР°РЅРёС‚ СЃСЃС‹Р»РєСѓ РЅР° РїРѕС‚РѕРє РІС‹РІРѕРґР° Рё С‚РµРєСѓС‰РёР№ РѕС‚СЃСѓРї
+    // Контекст вывода, хранит ссылку на поток вывода и текущий отсуп
     struct PrintContext {
         std::ostream& out;
         int indent_step = 2;
@@ -79,7 +79,7 @@ namespace json {
             }
         }
 
-        // Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІС‹Р№ РєРѕРЅС‚РµРєСЃС‚ РІС‹РІРѕРґР° СЃ СѓРІРµР»РёС‡РµРЅРЅС‹Рј СЃРјРµС‰РµРЅРёРµРј
+        // Возвращает новый контекст вывода с увеличенным смещением
         PrintContext Indented() const {
             return { out, indent_step, indent_step + indent };
         }

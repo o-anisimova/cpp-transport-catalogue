@@ -49,7 +49,7 @@ namespace json {
 
             std::string parsed_num;
 
-            // РЎС‡РёС‚С‹РІР°РµС‚ РІ parsed_num РѕС‡РµСЂРµРґРЅРѕР№ СЃРёРјРІРѕР» РёР· input
+            // Считывает в parsed_num очередной символ из input
             auto read_char = [&parsed_num, &input] {
                 parsed_num += static_cast<char>(input.get());
                 if (!input) {
@@ -57,7 +57,7 @@ namespace json {
                 }
             };
 
-            // РЎС‡РёС‚С‹РІР°РµС‚ РѕРґРЅСѓ РёР»Рё Р±РѕР»РµРµ С†РёС„СЂ РІ parsed_num РёР· input
+            // Считывает одну или более цифр в parsed_num из input
             auto read_digits = [&input, read_char] {
                 if (!std::isdigit(input.peek())) {
                     throw ParsingError("A digit is expected"s);
@@ -70,24 +70,24 @@ namespace json {
             if (input.peek() == '-') {
                 read_char();
             }
-            // РџР°СЂСЃРёРј С†РµР»СѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р°
+            // Парсим целую часть числа
             if (input.peek() == '0') {
                 read_char();
-                // РџРѕСЃР»Рµ 0 РІ JSON РЅРµ РјРѕРіСѓС‚ РёРґС‚Рё РґСЂСѓРіРёРµ С†РёС„СЂС‹
+                // После 0 в JSON не могут идти другие цифры
             }
             else {
                 read_digits();
             }
 
             bool is_int = true;
-            // РџР°СЂСЃРёРј РґСЂРѕР±РЅСѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р°
+            // Парсим дробную часть числа
             if (input.peek() == '.') {
                 read_char();
                 read_digits();
                 is_int = false;
             }
 
-            // РџР°СЂСЃРёРј СЌРєСЃРїРѕРЅРµРЅС†РёР°Р»СЊРЅСѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р°
+            // Парсим экспоненциальную часть числа
             if (int ch = input.peek(); ch == 'e' || ch == 'E') {
                 read_char();
                 if (ch = input.peek(); ch == '+' || ch == '-') {
@@ -99,13 +99,13 @@ namespace json {
 
             try {
                 if (is_int) {
-                    // РЎРЅР°С‡Р°Р»Р° РїСЂРѕР±СѓРµРј РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ РІ int
+                    // Сначала пробуем преобразовать строку в int
                     try {
                         return Node(std::stoi(parsed_num));
                     }
                     catch (...) {
-                        // Р’ СЃР»СѓС‡Р°Рµ РЅРµСѓРґР°С‡Рё, РЅР°РїСЂРёРјРµСЂ, РїСЂРё РїРµСЂРµРїРѕР»РЅРµРЅРёРё,
-                        // РєРѕРґ РЅРёР¶Рµ РїРѕРїСЂРѕР±СѓРµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ РІ double
+                        // В случае неудачи, например, при переполнении,
+                        // код ниже попробует преобразовать строку в double
                     }
                 }
                 return Node(std::stod(parsed_num));
@@ -115,8 +115,8 @@ namespace json {
             }
         }
 
-        // РЎС‡РёС‚С‹РІР°РµС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃС‚СЂРѕРєРѕРІРѕРіРѕ Р»РёС‚РµСЂР°Р»Р° JSON-РґРѕРєСѓРјРµРЅС‚Р°
-        // Р¤СѓРЅРєС†РёСЋ СЃР»РµРґСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїРѕСЃР»Рµ СЃС‡РёС‚С‹РІР°РЅРёСЏ РѕС‚РєСЂС‹РІР°СЋС‰РµРіРѕ СЃРёРјРІРѕР»Р° ":
+        // Считывает содержимое строкового литерала JSON-документа
+        // Функцию следует использовать после считывания открывающего символа ":
         Node LoadString(istream& input) {
             using namespace std::literals;
 
@@ -125,24 +125,24 @@ namespace json {
             std::string s;
             while (true) {
                 if (it == end) {
-                    // РџРѕС‚РѕРє Р·Р°РєРѕРЅС‡РёР»СЃСЏ РґРѕ С‚РѕРіРѕ, РєР°Рє РІСЃС‚СЂРµС‚РёР»Рё Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋ РєР°РІС‹С‡РєСѓ?
+                    // Поток закончился до того, как встретили закрывающую кавычку?
                     throw ParsingError("String parsing error");
                 }
                 const char ch = *it;
                 if (ch == '"') {
-                    // Р’СЃС‚СЂРµС‚РёР»Рё Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋ РєР°РІС‹С‡РєСѓ
+                    // Встретили закрывающую кавычку
                     ++it;
                     break;
                 }
                 else if (ch == '\\') {
-                    // Р’СЃС‚СЂРµС‚РёР»Рё РЅР°С‡Р°Р»Рѕ escape-РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+                    // Встретили начало escape-последовательности
                     ++it;
                     if (it == end) {
-                        // РџРѕС‚РѕРє Р·Р°РІРµСЂС€РёР»СЃСЏ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ СЃРёРјРІРѕР»Р° РѕР±СЂР°С‚РЅРѕР№ РєРѕСЃРѕР№ С‡РµСЂС‚С‹
+                        // Поток завершился сразу после символа обратной косой черты
                         throw ParsingError("String parsing error");
                     }
                     const char escaped_char = *(it);
-                    // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕРґРЅСѓ РёР· РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№: \\, \n, \t, \r, \"
+                    // Обрабатываем одну из последовательностей: \\, \n, \t, \r, \"
                     switch (escaped_char) {
                     case 'n':
                         s.push_back('\n');
@@ -160,16 +160,16 @@ namespace json {
                         s.push_back('\\');
                         break;
                     default:
-                        // Р’СЃС‚СЂРµС‚РёР»Рё РЅРµРёР·РІРµСЃС‚РЅСѓСЋ escape-РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
+                        // Встретили неизвестную escape-последовательность
                         throw ParsingError("Unrecognized escape sequence \\"s + escaped_char);
                     }
                 }
                 else if (ch == '\n' || ch == '\r') {
-                    // РЎС‚СЂРѕРєРѕРІС‹Р№ Р»РёС‚РµСЂР°Р» РІРЅСѓС‚СЂРё- JSON РЅРµ РјРѕР¶РµС‚ РїСЂРµСЂС‹РІР°С‚СЊСЃСЏ СЃРёРјРІРѕР»Р°РјРё \r РёР»Рё \n
+                    // Строковый литерал внутри- JSON не может прерываться символами \r или \n
                     throw ParsingError("Unexpected end of line"s);
                 }
                 else {
-                    // РџСЂРѕСЃС‚Рѕ СЃС‡РёС‚С‹РІР°РµРј РѕС‡РµСЂРµРґРЅРѕР№ СЃРёРјРІРѕР» Рё РїРѕРјРµС‰Р°РµРј РµРіРѕ РІ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰СѓСЋ СЃС‚СЂРѕРєСѓ
+                    // Просто считываем очередной символ и помещаем его в результирующую строку
                     s.push_back(ch);
                 }
                 ++it;
@@ -287,7 +287,7 @@ namespace json {
         return holds_alternative<Array>(*this);
     }
 
-    bool Node::IsMap() const {
+    bool Node::IsDict() const {
         return holds_alternative<Dict>(*this);
     }
 
@@ -298,7 +298,7 @@ namespace json {
         throw logic_error("Unvalid value type"s);
     }
 
-    const Dict& Node::AsMap() const {
+    const Dict& Node::AsDict() const {
         if (holds_alternative<Dict>(*this)) {
             return get<Dict>(*this);
         }
@@ -336,7 +336,11 @@ namespace json {
         throw logic_error("Unvalid value type"s);
     }
 
-    const Value& Node::GetValue() const {
+    const Node::Value& Node::GetValue() const {
+        return *this;
+    }
+
+    Node::Value& Node::GetValue() {
         return *this;
     }
 

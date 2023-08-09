@@ -44,7 +44,7 @@ namespace svg {
         auto& out = context.out;
         out << "<polyline points=\""sv;
         if (!points_.empty()) {
-            int elems_cnt = points_.size() - 1;
+            int elems_cnt = static_cast<int>(points_.size()) - 1;
             for (int i = 0; i < elems_cnt; ++i) {
                 out << points_[i].x << ","sv << points_[i].y << " "sv;
 

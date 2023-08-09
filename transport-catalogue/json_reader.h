@@ -1,6 +1,6 @@
 #pragma once
 #include "request_handler.h"
-#include "json.h"
+#include "json_builder.h"
 
 namespace transport {
 
@@ -41,11 +41,11 @@ namespace transport {
 
 			svg::Color GetColor(const json::Node& color_node);
 
-			json::Node OutputStop(const StatRequest& stat_request);
+			json::Dict OutputStop(const StatRequest& stat_request);
 
-			json::Node OutputBus(const StatRequest& stat_request);
+			json::Dict OutputBus(const StatRequest& stat_request);
 
-			json::Node OutputMap(const StatRequest& stat_request);
+			json::Dict OutputMap(const StatRequest& stat_request);
 		
 			RequestHandler request_handler_;
 			TransportCatalogue& transport_catalogue_;
