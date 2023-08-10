@@ -164,14 +164,8 @@ namespace json {
 		: BaseContext(base) {
 	}
 
-	Builder::KeyValueContext Builder::KeyItemContext::Value(const Node::Value& value) {
+	Builder::DictItemContext Builder::KeyItemContext::Value(const Node::Value& value) {
 		return BaseContext::Value(value);
-	}
-
-	//KEY VALUE CONTEXT-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	Builder::KeyValueContext::KeyValueContext(BaseContext base)
-		: BaseContext(base) {
 	}
 
 	//DICT ITEM CONTEXT-----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -190,17 +184,7 @@ namespace json {
 		: BaseContext(base) {
 	}
 
-	Builder::ArrayValueContext Builder::ArrayItemContext::Value(const Node::Value& value) {
-		return BaseContext::Value(value);
-	}
-
-	//ARRAY VALUE CONTEXT-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	Builder::ArrayValueContext::ArrayValueContext(BaseContext base)
-		: BaseContext(base) {
-	}
-
-	Builder::ArrayValueContext Builder::ArrayValueContext::Value(const Node::Value& value) {
+	Builder::ArrayItemContext Builder::ArrayItemContext::Value(const Node::Value& value) {
 		return BaseContext::Value(value);
 	}
 

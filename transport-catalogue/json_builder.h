@@ -8,10 +8,8 @@ namespace json {
 	private:
 		class BaseContext;
 		class KeyItemContext;
-		class KeyValueContext;
 		class DictItemContext;
 		class ArrayItemContext;
-		class ArrayValueContext;
 	public:
 		Builder();
 		Builder::KeyItemContext Key(const std::string& key);
@@ -38,7 +36,6 @@ namespace json {
 			Builder& builder_;
 		};
 
-		//Правило 1
 		class KeyItemContext : public BaseContext {
 		public:
 			KeyItemContext(BaseContext base);
@@ -48,26 +45,14 @@ namespace json {
 			KeyItemContext EndArray() = delete;
 			const Node& Build() = delete;
 
-			KeyValueContext Value(const Node::Value& value);
+			DictItemContext Value(const Node::Value& value);
 		};
 
-		//Правило 2
-		class KeyValueContext : public BaseContext {
-		public:
-			KeyValueContext(BaseContext base);
-
-			KeyValueContext Value(const Node::Value& value) = delete;
-			KeyValueContext StartDict() = delete;
-			KeyValueContext StartArray() = delete;
-			KeyValueContext EndArray() = delete;
-			const Node& Build() = delete;
-		};
-
-		//Правило 3
 		class DictItemContext : public BaseContext {
 		public:
 			DictItemContext(BaseContext base);
 
+			DictItemContext Value(const Node::Value& value) = delete;
 			DictItemContext StartDict() = delete;
 			DictItemContext StartArray() = delete;
 			DictItemContext EndArray() = delete;
@@ -77,7 +62,6 @@ namespace json {
 
 		};
 
-		//Правило 4
 		class ArrayItemContext : public BaseContext {
 		public:
 			ArrayItemContext(BaseContext base);
@@ -85,18 +69,7 @@ namespace json {
 			Builder& EndDict() = delete;
 			const Node& Build() = delete;
 
-			ArrayValueContext Value(const Node::Value& value);
-		};
-
-		//Правило 5
-		class ArrayValueContext : public BaseContext {
-		public:
-			ArrayValueContext(BaseContext base);
-			ArrayValueContext Key(const std::string& key) = delete;
-			ArrayValueContext EndDict() = delete;
-			const Node& Build() = delete;
-
-			ArrayValueContext Value(const Node::Value& value);
+			ArrayItemContext Value(const Node::Value& value);
 		};
 
 		enum CommandType {
