@@ -9,7 +9,9 @@ namespace transport {
 
 	void TransportCatalogue::AddStop(const Stop& stop) {
 		stops_.push_back(stop);
-		stopname_to_stop_.insert({ stops_.back().stop_name, &stops_.back() });
+		Stop& added_stop = stops_.back();
+		added_stop.id = stops_.size() - 1;
+		stopname_to_stop_.insert({ added_stop.stop_name, &stops_.back() });
 	}
 
 	Stop* TransportCatalogue::FindStop(string_view stop_name) const{
@@ -109,6 +111,22 @@ namespace transport {
 		bus_stat.curvature = bus_stat.route_length / geographic_route_length;
 
 		return bus_stat;
+	}
+
+	const std::deque<Stop>& TransportCatalogue::GetStopList() const {
+		return stops_;
+	}
+
+	const std::deque<Bus>& TransportCatalogue::GetBusList() const {
+		return buses_;
+	}
+
+	size_t TransportCatalogue::GetStopsCnt() const {
+		return stops_.size();
+	}
+
+	std::string_view TransportCatalogue::GetStopNameByPos(size_t pos) const {
+		return stops_[pos].stop_name;
 	}
 
 } // namespace transport

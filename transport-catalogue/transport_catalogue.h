@@ -21,18 +21,25 @@ namespace transport {
 
 		Bus* FindBus(std::string_view bus_name) const;
 
+		std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
+
 		const std::set<std::string_view>& GetStopToBusesList(Stop* stop) const;
 
 		void SetStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance);
-
+		
 		int GetDistanceBetweenStops(const Stop* lhs_stop, const Stop* rhs_stop) const;
 
 		std::vector<const Bus*> GetBusListSorted() const;
-
+		
 		std::vector<const Stop*> GetStopListSorted() const;
 
-		// Возвращает информацию о маршруте (запрос Bus)
-		std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
+		const std::deque<Stop>& GetStopList() const;
+
+		const std::deque<Bus>& GetBusList() const;
+
+		size_t GetStopsCnt() const;
+
+		std::string_view GetStopNameByPos(size_t pos) const;
 
 	private:
 		std::deque<Stop> stops_;

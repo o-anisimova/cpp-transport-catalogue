@@ -112,6 +112,8 @@ namespace transport {
 
         class MapRenderer {
         public:
+            MapRenderer() = default;
+
 	        void SetRenderSettings(const RenderSettings& render_settings);
 
             svg::Document RenderMap(const std::vector<const Bus*>& bus_list, const std::vector<const Stop*>& stop_list) const;
