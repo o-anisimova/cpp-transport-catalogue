@@ -22,7 +22,7 @@ namespace transport {
 
 	struct Bus {
 		std::string bus_name;
-		std::vector<Stop*> route;
+		std::vector<const Stop*> route;
 		bool is_roundtrip;
 	};
 

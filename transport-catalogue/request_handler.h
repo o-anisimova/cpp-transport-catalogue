@@ -3,6 +3,7 @@
 #include "transport_catalogue.h"
 #include "transport_router.h"
 #include "map_renderer.h"
+#include "serialization.h"
 
 namespace transport{
 
@@ -35,6 +36,10 @@ namespace transport{
         void BuildGraph();
 
         std::optional<Route> BuildRoute(std::string_view from, std::string_view to) const;
+
+        void Serialize(std::ofstream& output, const renderer::RenderSettings& settings, const RoutingSettings& routing_settings) const;
+
+        void Deserialize(std::ifstream& input);
 
     private:
         // RequestHandler использует агрегацию объектов "Транспортный Справочник" и "Визуализатор Карты"

@@ -6,7 +6,7 @@ namespace transport {
 		std::vector<const Stop*> bus_full_route;
 		bus_full_route.reserve(bus->route.size() * 2 - 1);
 
-		for (Stop* stop : bus->route) {
+		for (const Stop* stop : bus->route) {
 			bus_full_route.push_back(stop);
 		}
 		if (!bus->is_roundtrip) {

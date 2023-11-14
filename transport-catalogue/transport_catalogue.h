@@ -13,9 +13,12 @@ namespace transport {
 
 	class TransportCatalogue {
 	public:
+		using StopsDistances = std::unordered_map<std::pair<const Stop*, const Stop*>, int, PairStopHasher>;
+
 		void AddStop(const Stop& stop);
 
 		Stop* FindStop(std::string_view stop_name) const;
+	    const Stop* FindStopByPos(size_t pos) const;
 
 		void AddBus(const Bus& bus);
 
@@ -25,7 +28,7 @@ namespace transport {
 
 		const std::set<std::string_view>& GetStopToBusesList(Stop* stop) const;
 
-		void SetStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance);
+		void SetStopsDistance(const Stop* lhs_stop, const Stop* rhs_stop, int distance);
 		
 		int GetDistanceBetweenStops(const Stop* lhs_stop, const Stop* rhs_stop) const;
 
@@ -39,7 +42,7 @@ namespace transport {
 
 		size_t GetStopsCnt() const;
 
-		std::string_view GetStopNameByPos(size_t pos) const;
+		StopsDistances GetStopsDistances() const;
 
 	private:
 		std::deque<Stop> stops_;
@@ -47,7 +50,7 @@ namespace transport {
 		std::deque<Bus> buses_;
 		std::unordered_map<std::string_view, Bus*> busname_to_bus_;
 		std::unordered_map<const Stop*, std::set<std::string_view>> stop_to_bus_names_;
-		std::unordered_map<std::pair<const Stop*, const Stop*>, int, PairStopHasher> stops_distances_;
+		StopsDistances stops_distances_;
 	};
 
 }  // namespace transport

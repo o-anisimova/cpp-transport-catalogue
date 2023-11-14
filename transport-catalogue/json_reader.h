@@ -51,20 +51,21 @@ namespace transport {
 		class JsonReader {
 		public:
 			JsonReader(TransportCatalogue& transport_catalogue)
-			:request_handler_(transport_catalogue) {
+				:request_handler_(transport_catalogue) {
 			}
 
-			void FillCatalogue(std::istream& in);
-			void OutputData(std::ostream& out);
+			void MakeBase(std::istream& in);
+			void ProcessRequest(std::istream& in, std::ostream& out);
 
 		private:
 			void FillStops(const json::Array& base_requests);
 			void FillDistances(const json::Dict& stop_request);
 			void FillBus(const json::Dict& bus_request);
 			void FillStatRequestQueue(const json::Dict& stat_request_dict);
-			void FillRenderSettings(const json::Dict& bus_request);
-			void FillRoutingSettings(const json::Dict& routing_settings_dict);
+			renderer::RenderSettings FillRenderSettings(const json::Dict& bus_request);
+			RoutingSettings FillRoutingSettings(const json::Dict& routing_settings_dict);
 			svg::Color GetColor(const json::Node& color_node);
+			void OutputData(std::ostream& out);
 		
 			RequestHandler request_handler_;
 			std::vector<std::unique_ptr<BaseRequest>> stat_requests_;

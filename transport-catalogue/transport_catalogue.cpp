@@ -21,12 +21,16 @@ namespace transport {
 		return stopname_to_stop_.at(stop_name);
 	}
 
+    const Stop* TransportCatalogue::FindStopByPos(size_t pos) const{
+		return &(stops_.at(pos));
+	}
+
 	void TransportCatalogue::AddBus(const Bus& bus) {
 		buses_.push_back(bus);
 		Bus* added_bus = &buses_.back();
 		busname_to_bus_.insert({ added_bus->bus_name, added_bus });
 
-		for (Stop* stop : added_bus->route) {
+		for (const Stop* stop : added_bus->route) {
 			stop_to_bus_names_[stop].insert(added_bus->bus_name);
 		}
 	}
@@ -50,8 +54,8 @@ namespace transport {
 		return stop_to_bus_names_.at(stop);
 	}
 
-	void TransportCatalogue::SetStopsDistance(Stop* lhs_stop, Stop* rhs_stop, int distance) {
-		stops_distances_[std::pair<Stop*, Stop*>(lhs_stop, rhs_stop)] = distance;
+	void TransportCatalogue::SetStopsDistance(const Stop* lhs_stop, const Stop* rhs_stop, int distance) {
+		stops_distances_[std::pair<const Stop*, const Stop*>(lhs_stop, rhs_stop)] = distance;
 	}
 
 	int TransportCatalogue::GetDistanceBetweenStops(const Stop* lhs_stop, const Stop* rhs_stop) const {
@@ -125,8 +129,8 @@ namespace transport {
 		return stops_.size();
 	}
 
-	std::string_view TransportCatalogue::GetStopNameByPos(size_t pos) const {
-		return stops_[pos].stop_name;
+    TransportCatalogue::StopsDistances TransportCatalogue::GetStopsDistances() const {
+		return stops_distances_;
 	}
 
 } // namespace transport

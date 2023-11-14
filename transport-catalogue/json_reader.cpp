@@ -1,7 +1,9 @@
 #include "json_reader.h"
+#include "serialization.h"
 
 #include <cassert>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 using namespace json;
@@ -117,9 +119,14 @@ namespace transport {
 			return builder.Build().AsDict();	
 		}
 
-		void JsonReader::FillCatalogue(istream& in) {
+		void JsonReader::MakeBase(istream& in) {
 			Document document = Load(in);
 			const Dict& root_dict = document.GetRoot().AsDict();
+
+			std::string filename = root_dict.at("serialization_settings"s).AsDict().at("file"s).AsString();
+			ofstream out_file(filename, ios::binary);
+
+
 			assert(root_dict.count("base_requests"s) > 0);
 
 			const Array& base_requests = root_dict.at("base_requests"s).AsArray();
@@ -139,22 +146,18 @@ namespace transport {
 				}
 			}
 
+			renderer::RenderSettings settings;
 			if (root_dict.count("render_settings"s) > 0) {
-				FillRenderSettings(root_dict.at("render_settings"s).AsDict());
+				settings = FillRenderSettings(root_dict.at("render_settings"s).AsDict());
+
 			}
 
+			RoutingSettings routing_settings;
 			if (root_dict.count("routing_settings"s) > 0) {
-				FillRoutingSettings(root_dict.at("routing_settings"s).AsDict());
-				request_handler_.BuildGraph();
+				routing_settings = FillRoutingSettings(root_dict.at("routing_settings"s).AsDict());
 			}
 
-			//Сохраняем запросы к транспортному каталогу в вектор
-			if (root_dict.count("stat_requests"s) > 0) {
-				for (const auto& request_node : root_dict.at("stat_requests"s).AsArray()) {
-					const Dict& stat_request_dict = request_node.AsDict();
-					FillStatRequestQueue(stat_request_dict);
-				}
-			}
+			request_handler_.Serialize(out_file, settings, routing_settings);
 		}
 
 		void JsonReader::FillStops(const Array& base_requests) {
@@ -234,7 +237,7 @@ namespace transport {
 			}
 		}
 	
-		void JsonReader::FillRenderSettings(const Dict& render_settings_dict) {
+		renderer::RenderSettings JsonReader::FillRenderSettings(const Dict& render_settings_dict) {
 			renderer::RenderSettings render_settings;
 
 			assert(render_settings_dict.count("width"s) > 0);
@@ -280,10 +283,10 @@ namespace transport {
 				render_settings.color_palette.push_back(GetColor(color_node));
 			}
 
-			request_handler_.SetRenderSettings(render_settings);
+			return render_settings;
 		}
 
-		void JsonReader::FillRoutingSettings(const json::Dict& routing_settings_dict) {
+		RoutingSettings JsonReader::FillRoutingSettings(const json::Dict& routing_settings_dict) {
 			RoutingSettings routing_settings;
 
 			assert(routing_settings_dict.count("bus_wait_time"s) > 0);
@@ -292,7 +295,7 @@ namespace transport {
 			assert(routing_settings_dict.count("bus_velocity"s) > 0);
 			routing_settings.bus_velocity = routing_settings_dict.at("bus_velocity"s).AsDouble();
 
-			request_handler_.SetRoutingSettings(routing_settings);
+			return routing_settings;
 		}
 	
 		svg::Color JsonReader::GetColor(const Node& color_node) {
@@ -342,6 +345,27 @@ namespace transport {
 			}
 			builder.EndArray();
 			Print(Document(builder.Build()), out);
+		}
+
+		void JsonReader::ProcessRequest(istream& in, ostream& out) {
+			Document document = Load(in);
+			const Dict& root_dict = document.GetRoot().AsDict();
+
+			std::string filename = root_dict.at("serialization_settings"s).AsDict().at("file"s).AsString();
+			ifstream in_file(filename, ios::binary);
+
+			//Сохраняем запросы к транспортному каталогу в вектор
+			if (root_dict.count("stat_requests"s) > 0) {
+				for (const auto& request_node : root_dict.at("stat_requests"s).AsArray()) {
+					const Dict& stat_request_dict = request_node.AsDict();
+					FillStatRequestQueue(stat_request_dict);
+				}
+			}
+
+			//Десериализовали справочник
+			request_handler_.Deserialize(in_file);
+
+			OutputData(out);
 		}
 
 	} // namespace json_resder

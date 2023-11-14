@@ -54,4 +54,17 @@ namespace transport {
 		return transport_router_.BuildRoute(from, to);
 	}
 
+	void RequestHandler::Serialize(std::ofstream& output, const renderer::RenderSettings& settings, const RoutingSettings& routing_settings) const {
+		SerializeCatalogue(output, transport_catalogue_, settings, routing_settings);
+	}
+
+	void RequestHandler::Deserialize(std::ifstream& input) {
+		renderer::RenderSettings render_settings;
+		RoutingSettings routing_settings;
+		DeserializeCatalogue(input, transport_catalogue_, render_settings, routing_settings);
+		map_renderer_.SetRenderSettings(render_settings);
+		transport_router_.SetRoutingSettings(routing_settings);
+		transport_router_.BuildGraph();
+	}
+
 } // namespace transport

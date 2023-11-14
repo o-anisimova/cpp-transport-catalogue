@@ -1,10 +1,38 @@
+#include <fstream>
+#include <iostream>
+#include <string_view>
+
 #include "json_reader.h"
 #include "map_renderer.h"
 
-int main()
+#include "serialization.h"
+
+using namespace std::literals;
+
+void PrintUsage(std::ostream& stream = std::cerr) {
+	stream << "Usage: transport_catalogue [make_base|process_requests]\n"sv;
+}
+
+int main(int argc, char* argv[])
 {
+    if (argc != 2) {
+        PrintUsage();
+        return 1;
+    }
+
+    const std::string_view mode(argv[1]);
+
     transport::TransportCatalogue transport_catalogue;
-	transport::json_reader::JsonReader json_reader(transport_catalogue);
-	json_reader.FillCatalogue(std::cin);
-	json_reader.OutputData(std::cout);
+    transport::json_reader::JsonReader json_reader(transport_catalogue);
+
+    if (mode == "make_base"sv) {
+        json_reader.MakeBase(std::cin);
+    }
+    else if (mode == "process_requests"sv) {
+        json_reader.ProcessRequest(std::cin, std::cout);
+    }
+    else {
+        PrintUsage();
+        return 1;
+    }
 }

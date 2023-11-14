@@ -84,7 +84,7 @@ namespace transport {
 				//Если не указан автобус, считаем, что это Wait
 				if (edge.weight.bus_name.empty()) {
 					event.event_type = EventType::WAIT;
-					event.stop_name = transport_catalogue_.GetStopNameByPos(edge.from / 2);
+					event.stop_name = transport_catalogue_.FindStopByPos(edge.from / 2)->stop_name;
 				}
 				//Если указан автобус, то это BusTrip
 				else {
